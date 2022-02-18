@@ -34,3 +34,108 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-
 sudo chmod +x /usr/bin/docker-compose
 docker-compose version   
 ```
+
+### Behind the code
+
+> Now we can create a file called "docker-compose.yml"
+```sh
+version: '3'
+
+services:
+
+  database:
+
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    networks:
+      - wp-net
+    volumes:
+      - mysql-volume:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: mysqlroot123
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+
+  wordpress:
+
+    image: wordpress:php7.4-fpm-alpine
+    container_name: wordpress
+    restart: always
+    networks:
+      - wp-net
+    volumes:
+      - wp-volume:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: database
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+
+
+  nginx:
+
+    image: nginx:alpine
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - wp-net
+    volumes:
+      - wp-volume:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./jomygeorge.xyz.crt:/var/ssl/jomygeorge.xyz.crt
+      - ./jomygeorge.xyz.key:/var/ssl/jomygeorge.xyz.key
+
+
+volumes:
+  mysql-volume:
+  wp-volume:
+
+networks:
+  wp-net:
+  ```
+ ### Nginx reverse proxy configuration file for the nginx container creation, To do this, I have created a file called nginx.conf
+  ```sh
+  server {
+    listen 80;
+    return 301 https://jomygeorge.xyz;
+}
+server {
+#   listen 80;
+    listen 443 ssl;
+
+    server_name jomygeorge.xyz;
+
+    ssl_certificate /var/ssl/jomygeorge.xyz.crt;
+    ssl_certificate_key  /var/ssl/jomygeorge.xyz.key;
+
+    root /var/www/html;
+    index index.php;
+
+    if ($request_method = POST) {
+        set $cache_uri 'null cache';
+    }
+    if ($query_string != "") {
+        set $cache_uri 'null cache';
+    }
+
+   location / {
+    try_files $uri $uri/ /index.php?$args;
+  }
+
+#PHP scripts to FastCGI server listening on wordpress:9000
+  location ~ \.php$ {
+    fastcgi_split_path_info ^(.+\.php)(/.+)$;
+    fastcgi_pass wordpress:9000;
+    include fastcgi_params;
+    fastcgi_index index.php ;
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+  }
+}
+```
