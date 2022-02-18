@@ -24,8 +24,7 @@ Running WordPress typically involves installing a LAMP (Linux, Apache, MySQL, an
 ### Docker installation 
 
 ```sh
-yum install docker -y
-yum install git -y
+yum install docker -y after docker installation, please start and enable it
 ```
 ### docker-compose installation
 
@@ -99,6 +98,9 @@ networks:
   wp-net:
   ```
  ### Nginx reverse proxy configuration file for the nginx container creation, To do this, I have created a file called nginx.conf
+ 
+ > I have used openssl to generate the SSL certificate for this setup
+ 
   ```sh
   server {
     listen 80;
@@ -139,3 +141,58 @@ server {
   }
 }
 ```
+> After all file created
+```
+project]# ls -l
+total 16
+-rw-r--r-- 1 root root 1128 Feb 17 12:18 docker-compose.yml
+-rw-r--r-- 1 root root 1220 Feb 17 11:02 jomygeorge.xyz.crt
+-rw-r--r-- 1 root root 1708 Feb 17 11:02 jomygeorge.xyz.key
+-rw-r--r-- 1 root root  830 Feb 17 12:24 nginx.conf
+```
+### How to run the compose
+> docker-compose config              # To check the syntax
+> RUn docker-compose up -d           #--> This will create all the requirement which we have added on the yml file
+> docker-compose ps                  
+> docker network ls                  # To view the networks created
+> docker volume ls                   # To view the volumes created
+> docker-compose down                # To remove all created container and resources
+> You need to remove volumes manualy 
+
+
+## After creation
+```
+project]# docker container ls
+CONTAINER ID   IMAGE                         COMMAND                  CREATED         STATUS         PORTS                                                                      NAMES
+6f1613d7b3b5   mysql:5.7                     "docker-entrypoint.s…"   7 minutes ago   Up 7 minutes   3306/tcp, 33060/tcp                                                        mysql
+e639f82c6b6b   wordpress:php7.4-fpm-alpine   "docker-entrypoint.s…"   7 minutes ago   Up 7 minutes   9000/tcp                                                                   wordpress
+942fe62d1a0d   nginx:alpine                  "/docker-entrypoint.…"   7 minutes ago   Up 7 minutes   0.0.0.0:80->80/tcp, :::80->80/tcp, 0.0.0.0:443->443/tcp, :::443->443/tcp   nginx
+
+project]# docker image ls
+REPOSITORY   TAG                 IMAGE ID       CREATED       SIZE
+wordpress    php7.4-fpm-alpine   4dd3e804c85a   2 weeks ago   307MB
+mysql        5.7                 0712d5dc1b14   3 weeks ago   448MB
+nginx        alpine              bef258acf10d   3 weeks ago   23.4MB
+
+project]# docker volume ls
+DRIVER    VOLUME NAME
+local     project_mysql-volume
+local     project_wp-volume
+project]#
+```
+> Commmand to create the SSL cert
+ ```sh
+ openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout example.com.key -out example.com.crt
+ ```
+ 
+ ## Conclusion
+
+Created the wordpress with php, Nginx and mysql using docker compose
+
+
+#### ⚙️ Connect with Me
+
+<p align="center">
+<a href="mailto:jomyambattil@gmail.com"><img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white"/></a>
+<a href="https://www.linkedin.com/in/jomygeorge11"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"/></a> 
+<a href="https://www.instagram.com/therealjomy"><img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white"/></a><br />
