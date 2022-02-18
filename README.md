@@ -153,11 +153,22 @@ total 16
 ### How to run the compose
 
 > docker-compose config              # To check the syntax
+
 > RUn docker-compose up -d           #--> This will create all the requirement which we have added on the yml file
-> docker-compose ps                  
+
+
+> docker-compose ps   
+
+              
 > docker network ls                  # To view the networks created
+
+
 > docker volume ls                   # To view the volumes created
+
+
 > docker-compose down                # To remove all created container and resources
+
+
 > You need to remove volumes manualy 
 
 
