@@ -151,6 +151,7 @@ total 16
 -rw-r--r-- 1 root root  830 Feb 17 12:24 nginx.conf
 ```
 ### How to run the compose
+
 > docker-compose config              # To check the syntax
 > RUn docker-compose up -d           #--> This will create all the requirement which we have added on the yml file
 > docker-compose ps                  
