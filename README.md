@@ -199,7 +199,7 @@ project]#
  
  ## Conclusion
 
-Created the wordpress with php, Nginx and mysql using docker compose
+Created the wordpress with php, mysql and Nginx as reverse proxy (SSL) using docker compose
 
 
 #### ⚙️ Connect with Me
